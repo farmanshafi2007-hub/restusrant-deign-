@@ -1,0 +1,2724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kolibrie Studio</title>
+  <meta name="description" content="Kolibrie: a small studio for scroll-stopping reels, films and motion.">
+
+  <!-- Google Fonts: Archivo (variable), Playfair (variable 2.0), Yellowtail, Titan One -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Playfair:opsz,wdth,wght@5..1200,87.5..112.5,300..900&family=Titan+One&family=Yellowtail&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       1. DESIGN TOKENS & FLUID SCALING SYSTEM
+       ========================================================================== */
+    :root {
+      --cream: #faf3e4;
+      --ink: #141110;
+      --tomato: #ef4a23;
+      --butter: #ffd46e;
+      --sky: #8fc6e8;
+      --pink: #f6a9c2;
+      --sage: #b9c48a;
+      --white: #ffffff;
+      --night: #141110;
+      --page: var(--cream);
+
+      --ease-out: cubic-bezier(.65, .05, 0, 1);
+      --ease-bounce: cubic-bezier(.175, .885, .32, 1.275);
+    }
+
+    html[data-theme="dark"] {
+      --page: var(--night);
+    }
+
+    /* Fluid root font size: 1rem = 16px at 1440px */
+    html {
+      font-size: calc(100vw / 90);
+      background-color: var(--page);
+    }
+
+    @media (max-width: 991px) {
+      html {
+        font-size: calc(100vw / 60);
+      }
+    }
+
+    @media (max-width: 600px) {
+      html {
+        font-size: calc(100vw / 24.375);
+      }
+    }
+
+    /* Lenis smooth scroll helpers */
+    html.lenis,
+    html.lenis body {
+      height: auto;
+    }
+
+    .lenis.lenis-smooth {
+      scroll-behavior: auto !important;
+    }
+
+    .lenis.lenis-smooth [data-lenis-prevent] {
+      overscroll-behavior: contain;
+    }
+
+    /* ==========================================================================
+       2. RESET & BASE STYLES
+       ========================================================================== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--page);
+      color: var(--ink);
+      font-family: "Archivo", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-variation-settings: "wght" 400, "wdth" 100;
+      transition: background-color 0.7s var(--ease-out), color 0.7s var(--ease-out);
+      overflow-x: clip;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img,
+    svg,
+    video {
+      display: block;
+    }
+
+    /* Initial hidden states before GSAP reveal */
+    main {
+      visibility: hidden;
+    }
+
+    html[data-page-ready] main {
+      visibility: visible;
+    }
+
+    [data-text-reveal],
+    [data-scroll-reveal] {
+      visibility: hidden;
+    }
+
+    /* SplitText line mask padding so descenders are never clipped */
+    .line {
+      padding-bottom: 0.06em;
+      margin-bottom: -0.06em;
+    }
+
+    /* ==========================================================================
+       3. SHARED TYPOGRAPHY
+       ========================================================================== */
+    .hero-headline {
+      font-family: "Archivo", sans-serif;
+      font-weight: 700;
+      font-variation-settings: "wght" 700, "wdth" 72;
+      font-size: 9rem;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      line-height: 0.8em;
+      text-align: center;
+      user-select: none;
+    }
+
+    @media (max-width: 991px) {
+      .hero-headline {
+        font-size: 6.4rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero-headline {
+        font-size: 4rem;
+      }
+    }
+
+    .section-headline {
+      font-family: "Archivo", sans-serif;
+      font-weight: 700;
+      font-variation-settings: "wght" 700, "wdth" 72;
+      font-size: 8rem;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      line-height: 0.8em;
+      user-select: none;
+    }
+
+    @media (max-width: 991px) {
+      .section-headline {
+        font-size: 6rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .section-headline {
+        font-size: 4.2rem;
+      }
+    }
+
+    .team-headline {
+      font-size: 7rem;
+      text-align: center;
+    }
+
+    @media (max-width: 991px) {
+      .team-headline {
+        font-size: 6rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .team-headline {
+        font-size: 4.2rem;
+      }
+    }
+
+    .alt-word {
+      font-family: "Playfair", Georgia, serif;
+      font-weight: 300;
+      font-variation-settings: "wght" 300, "wdth" 87.5, "opsz" 120;
+      letter-spacing: -0.035em;
+      display: inline-block;
+    }
+
+    .eyebrow-m {
+      font-family: "Playfair", Georgia, serif;
+      font-weight: 500;
+      font-variation-settings: "wght" 500, "wdth" 87.5, "opsz" 40;
+      font-size: 2.5rem;
+      letter-spacing: -0.03em;
+      line-height: 1em;
+    }
+
+    @media (max-width: 600px) {
+      .eyebrow-m {
+        font-size: 1.75rem;
+      }
+    }
+
+    .eyebrow-s {
+      font-family: "Playfair", Georgia, serif;
+      font-weight: 500;
+      font-variation-settings: "wght" 500, "wdth" 87.5, "opsz" 40;
+      font-size: 2rem;
+      letter-spacing: -0.03em;
+      line-height: 1em;
+    }
+
+    @media (max-width: 600px) {
+      .eyebrow-s {
+        font-size: 1.5rem;
+      }
+    }
+
+    .body-copy {
+      font-family: "Playfair", Georgia, serif;
+      font-weight: 400;
+      font-variation-settings: "wght" 400, "wdth" 100, "opsz" 20;
+      font-size: 1.25rem;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+    }
+
+    /* ==========================================================================
+       4. CROP SYSTEM (SHEET SLICING VIA CONTAINER QUERIES)
+       ========================================================================== */
+    .crop {
+      position: relative;
+      container-type: size;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+
+    .crop .cell {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      aspect-ratio: var(--ar);
+      width: max(100cqw, calc(100cqh * var(--ar)));
+    }
+
+    .crop .cell img {
+      position: absolute;
+      max-width: none;
+      pointer-events: none;
+    }
+
+    /* ==========================================================================
+       5.1 LOAD WIPE OVERLAY
+       ========================================================================== */
+    .load-wipe {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      pointer-events: none;
+      overflow: clip;
+    }
+
+    .load-wipe[data-transition-ready] {
+      display: none;
+    }
+
+    .load-wipe svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ==========================================================================
+       5.2 CURSOR LABEL ("VIEW CASE ->")
+       ========================================================================== */
+    .cursor-marquee {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .cursor-marquee__card {
+      position: relative;
+      width: 9.5rem;
+      background-color: var(--butter);
+      color: var(--ink);
+      border-radius: 0.45rem;
+      overflow: hidden;
+      box-shadow: 0 0.5rem 1.5rem rgba(20, 17, 16, 0.16);
+      transform: translate(0.75rem, 0.75rem) scale(0);
+      transform-origin: top left;
+      transition: transform 0.4s var(--ease-out);
+      display: flex;
+      align-items: center;
+    }
+
+    .cursor-marquee[data-cursor-marquee-status="active"] .cursor-marquee__card {
+      transform: translate(0.75rem, 0.75rem) scale(1);
+    }
+
+    .cursor-marquee__text {
+      font-family: "Archivo", sans-serif;
+      font-weight: 700;
+      font-variation-settings: "wght" 700, "wdth" 72;
+      text-transform: uppercase;
+      font-size: 1.3rem;
+      line-height: 1;
+      padding: 0.375em 0.25em;
+      white-space: nowrap;
+      flex-shrink: 0;
+      animation: marqueeScroll linear infinite;
+      animation-play-state: paused;
+    }
+
+    .cursor-marquee__text.clone {
+      position: absolute;
+      left: 100%;
+      top: 0;
+    }
+
+    @keyframes marqueeScroll {
+      0% {
+        transform: translateX(0%);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    /* ==========================================================================
+       5.3 FIXED NAVIGATION
+       ========================================================================== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+
+    .nav > * {
+      pointer-events: auto;
+    }
+
+    .nav__logo {
+      font-family: "Yellowtail", cursive;
+      font-size: 3.6rem;
+      line-height: 1;
+      color: var(--tomato);
+      transform: rotate(-8deg);
+      transform-origin: left center;
+      margin-top: 0.2rem;
+      display: inline-block;
+      transition: transform 0.3s var(--ease-out);
+    }
+
+    .nav__logo:hover {
+      transform: rotate(-5deg) scale(1.03);
+    }
+
+    .nav__pill {
+      position: absolute;
+      left: 50%;
+      top: 1.25rem;
+      transform: translateX(-50%);
+      height: 3rem;
+      padding: 0 1.25rem;
+      background-color: var(--white);
+      color: var(--ink);
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      box-shadow: 0 0.25rem 1.2rem rgba(20, 17, 16, 0.06);
+    }
+
+    .nav__link {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      font-family: "Archivo", sans-serif;
+      font-weight: 700;
+      font-variation-settings: "wght" 700, "wdth" 72;
+      text-transform: uppercase;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .draw-line-box {
+      position: absolute;
+      left: 0;
+      top: 100%;
+      width: 100%;
+      height: 0.5em;
+      color: var(--tomato);
+      pointer-events: none;
+    }
+
+    .draw-line-box svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .nav__contact {
+      height: 3rem;
+      padding: 0 1.25rem;
+      background-color: var(--white);
+      color: var(--ink);
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: "Archivo", sans-serif;
+      font-weight: 700;
+      font-variation-settings: "wght" 700, "wdth" 72;
+      text-transform: uppercase;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      box-shadow: 0 0.25rem 1.2rem rgba(20, 17, 16, 0.06);
+      transition: transform 0.25s var(--ease-out);
+    }
+
+    .nav__contact:hover {
+      transform: translateY(-1px);
+    }
+
+    .nav__dot {
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 50%;
+      background-color: var(--tomato);
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 991px) {
+      .nav__pill {
+        display: none;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .nav {
+        padding: 1rem;
+      }
+      .nav__logo {
+        font-size: 2.6rem;
+      }
+      .nav__contact {
+        height: 2.5rem;
+        font-size: 0.95rem;
+        padding: 0 0.9rem;
+      }
+    }
+
+    /* ==========================================================================
+       5.4 HERO SECTION
+       ========================================================================== */
+    .hero {
+      position: relative;
+      height: 100vh;
+      height: 100svh;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero__video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 50%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 600px) {
+      .hero__video {
+        object-position: 6% 50%;
+      }
+    }
+
+    /* Hero Cursor Card */
+    .hero__cursor-card {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 16rem;
+      height: 16rem;
+      translate: -50% -50%;
+      z-index: 1;
+      overflow: hidden;
+      border-radius: 0.75rem;
+      background-color: var(--butter);
+      box-shadow: 0 1.25rem 3rem rgba(20, 17, 16, 0.18);
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    .hero__cursor-media {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform: scale(1.2);
+      will-change: transform;
+    }
+
+    .hero__cursor-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .hero__cursor-slide.on {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    @media (max-width: 600px) {
+      .hero__cursor-card {
+        width: 7.5rem;
+        height: 7.5rem;
+        top: 13%;
+        left: 50%;
+        translate: -50% 0%;
+        transform: rotate(-5deg) !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
+      .hero__cursor-media {
+        transform: scale(1.08) !important;
+      }
+    }
+
+    /* Hero Foreground Content */
+    .hero__content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: -3rem;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .hero__content {
+        gap: 1.4rem;
+        margin-top: 5rem;
+        padding: 0 1rem;
+      }
+    }
+
+    .hero__cta {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375em;
+      font-family: "Playfair", Georgia, serif;
+      font-weight: 500;
+      font-variation-settings: "wght" 500, "wdth" 87.5, "opsz" 40;
+      font-size: 2.1rem;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      .hero__cta {
+        font-size: 1.6rem;
+      }
+    }
+
+    .hero__cta-underline {
+      position: absolute;
+      left: 0;
+      top: 118%;
+      width: calc(100% - 1.375em);
+      height: 0.6em;
+      color: var(--tomato);
+      pointer-events: none;
+    }
+
+    .hero__cta-underline svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .hero__cta-arrow {
+      position: relative;
+      width: 1em;
+      height: 1em;
+      background-color: var(--tomato);
+      color: var(--white);
+      border-radius: 0.2em;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .hero__cta-arrow-track {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.525s var(--ease-bounce);
+    }
+
+    .hero__cta:hover .hero__cta-arrow-track {
+      transform: translateY(100%);
+    }
+
+    .hero__cta-arrow-icon {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero__cta-arrow-icon--top {
+      top: -100%;
+      bottom: 100%;
+    }
+
+    .hero__cta-arrow-icon svg {
+      width: 0.52em;
+      height: 0.48em;
+      fill: currentColor;
+    }
+
+    /* Client Marquee */
+    .hero__marquee {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 0;
+      width: 100%;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .hero__marquee-scroll {
+      display: flex;
+      align-items: center;
+      will-change: transform;
+    }
+
+    .hero__marquee-collection {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      will-change: transform;
+    }
+
+    .marquee-logo {
+      width: 9rem;
+      height: 7rem;
+      margin: 0 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--tomato);
+      flex-shrink: 0;
+    }
+
+    .marquee-logo svg {
+      width: 60%;
+      height: 60%;
+    }
+
+    @media (max-width: 600px) {
+      .marquee-logo {
+        width: 5.5rem;
+        height: 5rem;
+        margin: 0 1rem;
+      }
+    }
+
+    /* ==========================================================================
+       5.5 "LATEST DROPS" SECTION (PINNED 3D STACK)
+       ========================================================================== */
+    .work-section {
+      position: relative;
+      width: 100%;
+    }
+
+    .work-pin {
+      width: 100%;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 38fr 62fr;
+      gap: 2rem;
+      padding: 0 3rem 0 5rem;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .work-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.5rem;
+      z-index: 3;
+    }
+
+    .work-copy .eyebrow-s {
+      max-width: 26rem;
+    }
+
+    .work-stage {
+      position: relative;
+      height: 100%;
+      perspective: 1400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .work-stack {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .work-slide {
+      position: absolute;
+      aspect-ratio: 1.75;
+      width: min(80vh, 52vw);
+      left: 50%;
+      top: calc(50% - 5vh);
+      translate: -50% -50%;
+      border-radius: 1rem;
+      padding: 1.75vh;
+      display: block;
+      box-shadow: 0 1.5rem 3.5rem rgba(20, 17, 16, 0.16);
+      will-change: transform, opacity;
+      cursor: pointer;
+    }
+
+    .work-slide__inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 0.65rem;
+      overflow: hidden;
+    }
+
+    .work-slide__gradient {
+      position: absolute;
+      inset: 1.75vh;
+      border-radius: 0.65rem;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.42) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .work-slide__title {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 2.4em;
+      z-index: 3;
+      text-align: center;
+      font-family: "Archivo", sans-serif;
+      font-weight: 800;
+      font-variation-settings: "wght" 800, "wdth" 72;
+      text-transform: uppercase;
+      font-size: 7.5vh;
+      line-height: 0.8;
+      letter-spacing: -0.02em;
+      color: var(--cream);
+      text-shadow: 0 0.05em 0.3em rgba(0, 0, 0, 0.25);
+      pointer-events: none;
+      padding: 0 1rem;
+    }
+
+    .work-badge {
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      width: 9rem;
+      height: 9rem;
+      z-index: 5;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .work-badge svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Tablet & Phone: Unpinned vertical stack */
+    @media (max-width: 991px) {
+      .work-pin {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        padding: 6rem 1.5rem 4rem;
+        gap: 3rem;
+        align-items: stretch;
+        overflow: visible;
+      }
+
+      .work-stage {
+        height: auto;
+        perspective: none;
+        display: block;
+      }
+
+      .work-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        height: auto;
+        transform: none !important;
+      }
+
+      .work-slide {
+        position: relative;
+        left: auto;
+        top: auto;
+        translate: none;
+        width: 100%;
+        padding: 1rem;
+        transform: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
+
+      .work-slide__gradient {
+        inset: 1rem;
+      }
+
+      .work-slide__title {
+        font-size: 3.4rem;
+        bottom: 1.6em;
+      }
+
+      .work-badge {
+        display: none;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .work-slide__title {
+        font-size: 2.35rem;
+        bottom: 2rem;
+      }
+    }
+
+    /* ==========================================================================
+       5.6 "MEET THE FLOCK" SECTION (STICKY TITLE, DARK THEME, PARALLAX PHOTOS)
+       ========================================================================== */
+    .team-section {
+      position: relative;
+      height: 340vh;
+      width: 100%;
+      color: var(--ink);
+      transition: color 0.7s var(--ease-out);
+    }
+
+    html[data-theme="dark"] .team-section {
+      color: var(--cream);
+    }
+
+    @media (max-width: 991px) {
+      .team-section {
+        height: 260vh;
+      }
+    }
+
+    .team-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .team-center {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.4rem;
+      text-align: center;
+      pointer-events: auto;
+    }
+
+    @media (max-width: 600px) {
+      .team-center {
+        padding: 0 1.5rem;
+      }
+    }
+
+    .team-stamp {
+      position: absolute;
+      width: 10rem;
+      left: -3rem;
+      top: -8rem;
+      transform: rotate(-10deg);
+      cursor: grab;
+      user-select: none;
+      will-change: transform;
+    }
+
+    .team-stamp svg {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 0.5rem 1.25rem rgba(0, 0, 0, 0.25));
+    }
+
+    @media (max-width: 600px) {
+      .team-stamp {
+        width: 6rem;
+        left: 0;
+        top: -5rem;
+      }
+    }
+
+    .team-copy {
+      max-width: 26rem;
+    }
+
+    /* Photo Layer (above sticky title) */
+    .team-photos {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .team-card {
+      position: absolute;
+      pointer-events: auto;
+      will-change: transform;
+      cursor: grab;
+    }
+
+    .team-card__frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      background-color: #e9dcc6;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.28);
+    }
+
+    .team-card__sticker {
+      position: absolute;
+      left: 50%;
+      bottom: -0.9rem;
+      transform: translateX(-50%) rotate(var(--sticker-rot, 0deg));
+      font-family: "Titan One", cursive;
+      font-size: 3.4rem;
+      line-height: 1;
+      color: var(--tomato);
+      -webkit-text-stroke: 0.32rem var(--cream);
+      paint-order: stroke fill;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .team-card__caption {
+      position: absolute;
+      left: 0.7rem;
+      bottom: 0.7rem;
+      background-color: var(--cream);
+      color: var(--ink);
+      font-family: "Archivo", sans-serif;
+      font-weight: 700;
+      font-variation-settings: "wght" 700, "wdth" 72;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      line-height: 1;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* Desktop & Tablet exact coordinates */
+    .team-card[data-idx="0"] { left: 2.5vw; top: 3%; width: 14rem; transform: rotate(-4deg); }
+    .team-card[data-idx="1"] { left: 21vw; top: 19%; width: 11rem; transform: rotate(3deg); }
+    .team-card[data-idx="2"] { left: 3vw; top: 33%; width: 13rem; transform: rotate(5deg); }
+    .team-card[data-idx="3"] { left: 23vw; top: 49%; width: 13.5rem; transform: rotate(-3deg); }
+    .team-card[data-idx="4"] { left: 2vw; top: 64%; width: 11.5rem; transform: rotate(-6deg); }
+    .team-card[data-idx="5"] { left: 20vw; top: 79%; width: 14rem; transform: rotate(4deg); }
+
+    .team-card[data-idx="6"] { right: 3vw; top: 2%; width: 13.5rem; transform: rotate(4deg); }
+    .team-card[data-idx="7"] { right: 22vw; top: 17%; width: 11rem; transform: rotate(-5deg); }
+    .team-card[data-idx="8"] { right: 2.5vw; top: 32%; width: 14rem; transform: rotate(-3deg); }
+    .team-card[data-idx="9"] { right: 23vw; top: 48%; width: 13rem; transform: rotate(5deg); }
+    .team-card[data-idx="10"] { right: 3vw; top: 63%; width: 11.5rem; transform: rotate(6deg); }
+    .team-card[data-idx="11"] { right: 20vw; top: 78%; width: 14rem; transform: rotate(-4deg); }
+
+    /* Phone Overrides (<=600px) */
+    @media (max-width: 600px) {
+      .team-card {
+        width: 8rem !important;
+      }
+
+      /* Left column alternating heights (1, 17, 33, 49, 65, 81%) & odd/even edge offsets */
+      .team-card[data-idx="0"] { left: -1rem; top: 1%; }
+      .team-card[data-idx="1"] { left: 4rem; top: 17%; }
+      .team-card[data-idx="2"] { left: -1rem; top: 33%; }
+      .team-card[data-idx="3"] { left: 4rem; top: 49%; }
+      .team-card[data-idx="4"] { left: -1rem; top: 65%; }
+      .team-card[data-idx="5"] { left: 4rem; top: 81%; }
+
+      /* Right column alternating heights (9, 25, 41, 57, 73, 89%) & odd/even edge offsets */
+      .team-card[data-idx="6"] { right: -1rem; top: 9%; }
+      .team-card[data-idx="7"] { right: 4rem; top: 25%; }
+      .team-card[data-idx="8"] { right: -1rem; top: 41%; }
+      .team-card[data-idx="9"] { right: 4rem; top: 57%; }
+      .team-card[data-idx="10"] { right: -1rem; top: 73%; }
+      .team-card[data-idx="11"] { right: 4rem; top: 89%; }
+
+      .team-card__sticker {
+        font-size: 1.9rem;
+        -webkit-text-stroke: 0.22rem var(--cream);
+        bottom: -0.6rem;
+      }
+
+      .team-card__caption {
+        display: none;
+      }
+    }
+
+    /* ==========================================================================
+       7. REDUCED MOTION FALLBACKS
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      .load-wipe {
+        display: none !important;
+      }
+
+      main,
+      [data-text-reveal],
+      [data-scroll-reveal] {
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
+      .hero__cta-arrow-track {
+        transition: none;
+      }
+
+      .team-section {
+        height: auto !important;
+      }
+
+      .team-sticky {
+        position: relative;
+        height: auto;
+        padding: 8rem 1.5rem 4rem;
+      }
+
+      .team-photos {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+      }
+
+      .team-card {
+        position: relative !important;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+        width: 100% !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 5.1 LOAD WIPE OVERLAY -->
+  <div class="load-wipe" id="loadWipe" aria-hidden="true">
+    <svg viewBox="0 0 1000 1000" preserveAspectRatio="none">
+      <path
+        id="wipePath"
+        d="M43 259C296 11.5688 994 -3 922.994 498.259C851.988 999.517 281.229 1004.28 123 767C-35.2287 529.721 179 259 472 259C765 259 792 498.259 659 654C526 809.741 319 755 285 669.001C251 583.001 299 452 496 452C693 452 876.073 639.171 935 937.001"
+        fill="none"
+        stroke="#ef4a23"
+        stroke-width="0"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </div>
+
+  <!-- 5.2 CURSOR LABEL ("VIEW CASE ->") -->
+  <div class="cursor-marquee" id="cursorMarquee" data-cursor-marquee-status="not-active" aria-hidden="true">
+    <div class="cursor-marquee__card">
+      <span class="cursor-marquee__text">View case &rarr;</span>
+      <span class="cursor-marquee__text clone">View case &rarr;</span>
+    </div>
+  </div>
+
+  <!-- 5.3 NAVIGATION -->
+  <header class="nav">
+    <a href="#top" class="nav__logo" aria-label="Kolibrie home">Kolibrie</a>
+
+    <nav class="nav__pill" aria-label="Primary">
+      <a href="#team" class="nav__link" data-draw-line>
+        <span>About</span>
+        <span class="draw-line-box" aria-hidden="true"></span>
+      </a>
+      <a href="#work" class="nav__link" data-draw-line>
+        <span>Work</span>
+        <span class="draw-line-box" aria-hidden="true"></span>
+      </a>
+      <a href="#work" class="nav__link" data-draw-line>
+        <span>Services</span>
+        <span class="draw-line-box" aria-hidden="true"></span>
+      </a>
+    </nav>
+
+    <a href="#team" class="nav__contact">
+      <span class="nav__dot" aria-hidden="true"></span>
+      <span>Contact</span>
+    </a>
+  </header>
+
+  <main id="top">
+    <!-- 5.4 HERO SECTION -->
+    <section class="hero" id="hero" data-cursor-cards data-threshold="300">
+      <video
+        class="hero__video"
+        id="heroVideo"
+        poster="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261110_224241_f6feccd5-1c45-4d22-b369-f927916f9973.png&w=2048&q=85"
+        muted
+        loop
+        playsinline
+        preload="auto"
+        aria-hidden="true"
+      ></video>
+
+      <!-- Hero Cursor Card (8 stacked crop boxes) -->
+      <div class="hero__cursor-card" id="heroCursorCard" aria-hidden="true">
+        <div class="hero__cursor-media" id="heroCursorMedia">
+          <div class="hero__cursor-slide on"><div class="crop" data-crop="work2:1"></div></div>
+          <div class="hero__cursor-slide"><div class="crop" data-crop="work1:0"></div></div>
+          <div class="hero__cursor-slide"><div class="crop" data-crop="work2:3"></div></div>
+          <div class="hero__cursor-slide"><div class="crop" data-crop="work1:1"></div></div>
+          <div class="hero__cursor-slide"><div class="crop" data-crop="work2:2"></div></div>
+          <div class="hero__cursor-slide"><div class="crop" data-crop="work1:2"></div></div>
+          <div class="hero__cursor-slide"><div class="crop" data-crop="work2:0"></div></div>
+          <div class="hero__cursor-slide"><div class="crop" data-crop="work1:3"></div></div>
+        </div>
+      </div>
+
+      <!-- Hero Foreground Content -->
+      <div class="hero__content" data-text-reveal-group>
+        <h1
+          class="hero-headline"
+          data-text-reveal="chars"
+          data-font-weight-hover
+          data-wght-rest="700"
+          data-wght-near="200"
+          data-wght-radius="400"
+        >
+          Stories that<br>
+          get <span
+            class="alt-word"
+            data-font-weight-hover
+            data-wght-rest="300"
+            data-wght-near="800"
+            data-wght-radius="400"
+          >shared</span>
+        </h1>
+
+        <a href="#work" class="hero__cta" data-draw-line="always">
+          <span>See the reel</span>
+          <span class="hero__cta-underline draw-line-box" aria-hidden="true"></span>
+          <span class="hero__cta-arrow" aria-hidden="true">
+            <span class="hero__cta-arrow-track">
+              <span class="hero__cta-arrow-icon hero__cta-arrow-icon--top">
+                <svg viewBox="0 0 14 13"><path d="M12.94 5.7 9.95 8 6.9 10.37l.84 1.86V0h-2.55v12.23l.85-1.86L3 8 0 5.7V9.05l6.47 4.95 6.47-4.95z"/></svg>
+              </span>
+              <span class="hero__cta-arrow-icon">
+                <svg viewBox="0 0 14 13"><path d="M12.94 5.7 9.95 8 6.9 10.37l.84 1.86V0h-2.55v12.23l.85-1.86L3 8 0 5.7V9.05l6.47 4.95 6.47-4.95z"/></svg>
+              </span>
+            </span>
+          </span>
+        </a>
+      </div>
+
+      <!-- Client Marquee -->
+      <div class="hero__marquee" id="heroMarquee" aria-hidden="true">
+        <div class="hero__marquee-scroll" id="marqueeScroll">
+          <div class="hero__marquee-collection" id="marqueeCollection">
+            <!-- 1. Six-spoke asterisk of round-capped strokes -->
+            <div class="marquee-logo">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round">
+                <line x1="40" y1="10" x2="40" y2="70"/>
+                <line x1="14" y1="25" x2="66" y2="55"/>
+                <line x1="66" y1="25" x2="14" y2="55"/>
+              </svg>
+            </div>
+            <!-- 2. Two capsule "D" shapes side by side -->
+            <div class="marquee-logo">
+              <svg viewBox="0 0 80 80" fill="currentColor">
+                <path d="M12 16h12c11.046 0 20 8.954 20 20v8c0 11.046-8.954 20-20 20H12V16z"/>
+                <path d="M46 16h8c11.046 0 20 8.954 20 20v8c0 11.046-8.954 20-20 20h-8V16z"/>
+              </svg>
+            </div>
+            <!-- 3. Three wavy lines -->
+            <div class="marquee-logo">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round">
+                <path d="M10 22c10-8 20-8 30 0s20 8 30 0"/>
+                <path d="M10 40c10-8 20-8 30 0s20 8 30 0"/>
+                <path d="M10 58c10-8 20-8 30 0s20 8 30 0"/>
+              </svg>
+            </div>
+            <!-- 4. Four diamonds in a diamond pattern -->
+            <div class="marquee-logo">
+              <svg viewBox="0 0 80 80" fill="currentColor">
+                <polygon points="40,8 50,18 40,28 30,18"/>
+                <polygon points="40,52 50,62 40,72 30,62"/>
+                <polygon points="18,30 28,40 18,50 8,40"/>
+                <polygon points="62,30 72,40 62,50 52,40"/>
+              </svg>
+            </div>
+            <!-- 5. Half sun over three bars -->
+            <div class="marquee-logo">
+              <svg viewBox="0 0 80 80" fill="currentColor">
+                <path d="M16 42a24 24 0 0 1 48 0H16z"/>
+                <rect x="12" y="48" width="56" height="5" rx="2.5"/>
+                <rect x="18" y="57" width="44" height="5" rx="2.5"/>
+                <rect x="26" y="66" width="28" height="5" rx="2.5"/>
+              </svg>
+            </div>
+            <!-- 6. Two arches -->
+            <div class="marquee-logo">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round">
+                <path d="M14 62V38a26 26 0 0 1 52 0v24"/>
+                <path d="M28 62V40a12 12 0 0 1 24 0v22"/>
+              </svg>
+            </div>
+            <!-- 7. Four-point sparkle star -->
+            <div class="marquee-logo">
+              <svg viewBox="0 0 80 80" fill="currentColor">
+                <path d="M40 6C42 28 52 38 74 40C52 42 42 52 40 74C38 52 28 42 6 40C28 38 38 28 40 6Z"/>
+              </svg>
+            </div>
+            <!-- 8. Circle with a cross inside -->
+            <div class="marquee-logo">
+              <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round">
+                <circle cx="40" cy="40" r="28"/>
+                <line x1="40" y1="22" x2="40" y2="58"/>
+                <line x1="22" y1="40" x2="58" y2="40"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5.5 "LATEST DROPS" SECTION -->
+    <section class="work-section" id="work" data-featured-stack data-scroll-factor="1.2">
+      <div class="work-pin" id="workPin">
+        <!-- Left Copy -->
+        <div class="work-copy" data-scroll-reveal-group>
+          <p class="eyebrow-s" data-scroll-reveal="lines">
+            Made to be watched twice. A handful of what left our edit desk lately.
+          </p>
+          <h2
+            class="section-headline"
+            data-scroll-reveal="chars"
+            data-font-weight-hover
+            data-wght-rest="700"
+            data-wght-near="200"
+            data-wght-radius="400"
+          >
+            Latest <span
+              class="alt-word"
+              data-font-weight-hover
+              data-wght-rest="300"
+              data-wght-near="800"
+              data-wght-radius="400"
+            >drops</span>
+          </h2>
+        </div>
+
+        <!-- Right 3D Card Stage -->
+        <div class="work-stage">
+          <div class="work-stack" id="workStack">
+            <!-- Slide 1 -->
+            <a href="#work" class="work-slide" style="background-color: var(--tomato);" data-cursor-marquee-text="View case &rarr;">
+              <div class="work-slide__inner">
+                <div class="crop" data-crop="work1:0"></div>
+              </div>
+              <div class="work-slide__gradient"></div>
+              <h3 class="work-slide__title">SQUEEZE THE SUN</h3>
+            </a>
+
+            <!-- Slide 2 -->
+            <a href="#work" class="work-slide" style="background-color: var(--sky);" data-cursor-marquee-text="View case &rarr;">
+              <div class="work-slide__inner">
+                <div class="crop" data-crop="work1:1"></div>
+              </div>
+              <div class="work-slide__gradient"></div>
+              <h3 class="work-slide__title">DEEP END DAYS</h3>
+            </a>
+
+            <!-- Slide 3 -->
+            <a href="#work" class="work-slide" style="background-color: var(--butter);" data-cursor-marquee-text="View case &rarr;">
+              <div class="work-slide__inner">
+                <div class="crop" data-crop="work1:2"></div>
+              </div>
+              <div class="work-slide__gradient"></div>
+              <h3 class="work-slide__title">FLAKE &amp; BAKE</h3>
+            </a>
+
+            <!-- Slide 4 -->
+            <a href="#work" class="work-slide" style="background-color: var(--sage);" data-cursor-marquee-text="View case &rarr;">
+              <div class="work-slide__inner">
+                <div class="crop" data-crop="work1:3"></div>
+              </div>
+              <div class="work-slide__gradient"></div>
+              <h3 class="work-slide__title">CURB APPEAL</h3>
+            </a>
+
+            <!-- Slide 5 -->
+            <a href="#work" class="work-slide" style="background-color: var(--pink);" data-cursor-marquee-text="View case &rarr;">
+              <div class="work-slide__inner">
+                <div class="crop" data-crop="work2:0"></div>
+              </div>
+              <div class="work-slide__gradient"></div>
+              <h3 class="work-slide__title">NIGHT BITES</h3>
+            </a>
+          </div>
+
+          <!-- Rotating Sun Badge -->
+          <div class="work-badge" id="workBadge" aria-hidden="true">
+            <svg viewBox="0 0 200 200">
+              <defs>
+                <path id="badgeCirclePath" d="M 100, 100 m -70, 0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0"/>
+              </defs>
+              <circle cx="100" cy="100" r="98" fill="#ef4a23"/>
+              <text
+                fill="#faf3e4"
+                font-family="Archivo, sans-serif"
+                font-weight="800"
+                font-size="24"
+                style="font-variation-settings: 'wght' 800, 'wdth' 80;"
+              >
+                <textPath href="#badgeCirclePath" textLength="436" lengthAdjust="spacing">
+                  SCROLL &middot; SAVE &middot; SHARE &middot; REPEAT &middot;
+                </textPath>
+              </text>
+              <!-- Center Outline Sun -->
+              <g stroke="#faf3e4" stroke-width="5" stroke-linecap="round" fill="none">
+                <circle cx="100" cy="100" r="17"/>
+                <line x1="100" y1="68" x2="100" y2="75"/>
+                <line x1="100" y1="125" x2="100" y2="132"/>
+                <line x1="68" y1="100" x2="75" y2="100"/>
+                <line x1="125" y1="100" x2="132" y2="100"/>
+                <line x1="77.4" y1="77.4" x2="82.3" y2="82.3"/>
+                <line x1="117.7" y1="117.7" x2="122.6" y2="122.6"/>
+                <line x1="122.6" y1="77.4" x2="117.7" y2="82.3"/>
+                <line x1="82.3" y1="117.7" x2="77.4" y2="122.6"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5.6 "MEET THE FLOCK" SECTION -->
+    <section class="team-section" id="team" data-page-theme="dark">
+      <!-- Sticky Centered Title -->
+      <div class="team-sticky">
+        <div class="team-center" data-scroll-reveal-group>
+          <!-- Kolibrie Stamp Sticker -->
+          <div class="team-stamp" data-momentum-hover aria-hidden="true">
+            <svg viewBox="0 0 220 130">
+              <ellipse cx="110" cy="65" rx="104" ry="58" fill="#faf3e4" stroke="#ef4a23" stroke-width="10"/>
+              <text
+                x="110"
+                y="82"
+                text-anchor="middle"
+                fill="#ef4a23"
+                font-family="Yellowtail, cursive"
+                font-size="54"
+                transform="rotate(-8 110 65)"
+              >Kolibrie</text>
+            </svg>
+          </div>
+
+          <p class="eyebrow-m" data-scroll-reveal="lines">
+            The people behind the frames
+          </p>
+
+          <h2
+            class="section-headline team-headline"
+            data-scroll-reveal="chars"
+            data-font-weight-hover
+            data-wght-rest="700"
+            data-wght-near="200"
+            data-wght-radius="400"
+          >
+            <span
+              class="alt-word"
+              data-font-weight-hover
+              data-wght-rest="300"
+              data-wght-near="800"
+              data-wght-radius="400"
+            >Meet</span> the <span
+              class="alt-word"
+              data-font-weight-hover
+              data-wght-rest="300"
+              data-wght-near="800"
+              data-wght-radius="400"
+            >flock</span>
+          </h2>
+
+          <p class="body-copy team-copy" data-scroll-reveal="element">
+            Twelve makers, one group chat. We shoot, cut and animate before the coffee goes cold.
+          </p>
+        </div>
+      </div>
+
+      <!-- 12 Parallax & Momentum-Hover Team/BTS Photos -->
+      <div class="team-photos" id="teamPhotos">
+        <!-- Left Column (6 items) -->
+        <div class="team-card" data-idx="0" data-speed="1" data-momentum-hover>
+          <div class="team-card__frame"><div class="crop" data-crop="team1:0"></div></div>
+          <span class="team-card__sticker" style="--sticker-rot: -7deg;">Noor</span>
+        </div>
+
+        <div class="team-card" data-idx="1" data-speed="0.6" data-momentum-hover>
+          <div class="team-card__frame"><div class="crop" data-crop="bts:0"></div></div>
+          <span class="team-card__caption">ON SET</span>
+        </div>
+
+        <div class="team-card" data-idx="2" data-speed="1.3" data-momentum-hover>
+          <div class="team-card__frame"><div class="crop" data-crop="team1:1"></div></div>
+          <span class="team-card__sticker" style="--sticker-rot: 4deg;">Sem</span>
+        </div>
+
+        <div class="team-card" data-idx="3" data-speed="0.8" data-momentum-hover>
+          <div class="team-card__frame"><div class="crop" data-crop="team2:3"></div></div>
+          <span class="team-card__sticker" style="--sticker-rot: -5deg;">Mila</span>
+        </div>
+
+        <div class="team-card" data-idx="4" data-speed="1.15" data-momentum-hover>
+          <div class="team-card__frame"><div class="crop" data-crop="bts:2"></div></div>
+          <span class="team-card__caption">DINNER, IN 9:16</span>
+        </div>
+
+        <div class="team-card" data-idx="5" data-speed="0.7" data-momentum-hover>
+          <div class="team-card__frame"><div class="crop" data-crop="team1:2"></div></div>
+          <span class="team-card__sticker" style="--sticker-rot: 6deg;">Daan</span>
+        </div>
+
+        <!-- Right Column (6 items) -->
+        <div class="team-card" data-idx="6" data-speed="0.75" data-momentum-hover>
+          <div class="team-card__frame"><div class="crop" data-crop="team2:0"></div></div>
+          <span class="team-card__sticker" style="--sticker-rot: 5deg;">Lotte</span>
+        </div>
+
+        <div class="team-card" data-idx="7" data-speed="1.25" data-momentum-hover>
+          <div class="team-card__frame"><div class="crop" data-crop="bts:1"></div></div>
+          <span class="team-card__caption">TAKE ONE</span>
+        </div>
+
+        <div class="team-card" data-idx="8" data-speed="0.9" data-momentum-hover>
+          <div class="team-card__frame"><div class="crop" data-crop="team2:1"></div></div>
+          <span class="team-card__sticker" style="--sticker-rot: -6deg;">Jules</span>
+        </div>
+
+        <div class="team-card" data-idx="9" data-speed="1.4" data-momentum-hover>
+          <div class="team-card__frame"><div class="crop" data-crop="team1:3"></div></div>
+          <span class="team-card__sticker" style="--sticker-rot: 4deg;">Yara</span>
+        </div>
+
+        <div class="team-card" data-idx="10" data-speed="0.65" data-momentum-hover>
+          <div class="team-card__frame"><div class="crop" data-crop="bts:3"></div></div>
+          <span class="team-card__caption">GOLDEN HOUR</span>
+        </div>
+
+        <div class="team-card" data-idx="11" data-speed="1.05" data-momentum-hover>
+          <div class="team-card__frame"><div class="crop" data-crop="team2:2"></div></div>
+          <span class="team-card__sticker" style="--sticker-rot: -4deg;">Kenji</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 1. LIBRARIES (EXACT ORDER AT END OF BODY) -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/InertiaPlugin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.17/dist/lenis.min.js"></script>
+
+  <script>
+    (function () {
+      "use strict";
+
+      /* ========================================================================
+         FAILSAFE & IMMEDIATE REVEAL GUARD
+         ======================================================================== */
+      const revealAllImmediately = () => {
+        document.documentElement.setAttribute("data-page-ready", "true");
+        const wipe = document.getElementById("loadWipe");
+        if (wipe) wipe.setAttribute("data-transition-ready", "true");
+        document.querySelectorAll("[data-text-reveal], [data-scroll-reveal]").forEach((el) => {
+          el.style.visibility = "visible";
+          el.style.opacity = "1";
+        });
+      };
+
+      const failsafeTimer = setTimeout(() => {
+        if (!document.documentElement.hasAttribute("data-page-ready")) {
+          revealAllImmediately();
+        }
+      }, 4000);
+
+      /* ========================================================================
+         4. SHEET CROP ENGINE (NO LOCAL SLICING)
+         ======================================================================== */
+      const SHEETS = {
+        work1: {
+          url: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261110_224238_b0899b4d-5876-4c63-98d3-8608d8dbe790.png&w=2400&q=85",
+          w: 2688,
+          h: 1520,
+          cells: [
+            [0, 0, 1336, 752],
+            [1352, 0, 1336, 752],
+            [0, 768, 1336, 752],
+            [1352, 768, 1336, 752],
+          ],
+        },
+        work2: {
+          url: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261110_224238_aee93a53-873f-470f-afb3-6395c22ab639.png&w=2400&q=85",
+          w: 2688,
+          h: 1520,
+          cells: [
+            [0, 0, 1335, 749],
+            [1356, 0, 1332, 749],
+            [0, 770, 1335, 750],
+            [1356, 770, 1332, 750],
+          ],
+        },
+        team1: {
+          url: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261110_224239_be9bd6b1-debb-4a95-aadf-1a36e4d2f557.png&w=1600&q=85",
+          w: 1744,
+          h: 2336,
+          cells: [
+            [0, 0, 864, 1156],
+            [881, 0, 863, 1156],
+            [0, 1175, 864, 1161],
+            [881, 1175, 863, 1161],
+          ],
+        },
+        team2: {
+          url: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261110_224238_bfc657e7-cbc1-43fb-a726-e8be5dd42302.png&w=1600&q=85",
+          w: 1744,
+          h: 2336,
+          cells: [
+            [0, 0, 864, 1159],
+            [880, 0, 864, 1159],
+            [0, 1176, 864, 1160],
+            [880, 1176, 864, 1160],
+          ],
+        },
+        bts: {
+          url: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261110_224238_bf8567fa-9d67-4f1e-b4e0-5662c0bf70e4.png&w=1600&q=85",
+          w: 1744,
+          h: 2336,
+          cells: [
+            [0, 0, 865, 1160],
+            [881, 0, 863, 1160],
+            [0, 1176, 865, 1160],
+            [881, 1176, 863, 1160],
+          ],
+        },
+      };
+
+      function hydrateCrops() {
+        document.querySelectorAll(".crop[data-crop]").forEach((box) => {
+          const [sheetKey, idxStr] = box.dataset.crop.split(":");
+          const sheet = SHEETS[sheetKey];
+          const rect = sheet && sheet.cells[Number(idxStr)];
+          if (!sheet || !rect) return;
+
+          // Inset by 4px on every side so white gutters never show
+          const x = rect[0] + 4;
+          const y = rect[1] + 4;
+          const w = rect[2] - 8;
+          const h = rect[3] - 8;
+
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.style.setProperty("--ar", `${w} / ${h}`);
+
+          const img = document.createElement("img");
+          img.src = sheet.url;
+          img.alt = "";
+          img.loading = "lazy";
+          img.decoding = "async";
+          img.style.width = `${(sheet.w / w) * 100}%`;
+          img.style.height = `${(sheet.h / h) * 100}%`;
+          img.style.left = `${(-x / w) * 100}%`;
+          img.style.top = `${(-y / h) * 100}%`;
+
+          cell.appendChild(img);
+          box.appendChild(cell);
+        });
+      }
+
+      hydrateCrops();
+
+      /* ========================================================================
+         HERO VIDEO & REDUCED MOTION HANDLING
+         ======================================================================== */
+      const HERO_VIDEO_SRC =
+        "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261110_231342_88260d66-aa30-4612-9157-d7f1b5a66d8c.mp4";
+      const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+      let prefersReducedMotion = reducedMotionQuery.matches;
+
+      function syncHeroVideo() {
+        const video = document.getElementById("heroVideo");
+        if (!video) return;
+        if (prefersReducedMotion) {
+          video.pause();
+          video.removeAttribute("src");
+          video.load();
+        } else if (!video.getAttribute("src")) {
+          video.src = HERO_VIDEO_SRC;
+          video.play().catch(() => {});
+        }
+      }
+
+      syncHeroVideo();
+      reducedMotionQuery.addEventListener("change", (e) => {
+        prefersReducedMotion = e.matches;
+        syncHeroVideo();
+      });
+
+      /* ========================================================================
+         CHECK GSAP AVAILABILITY
+         ======================================================================== */
+      if (typeof window.gsap === "undefined") {
+        clearTimeout(failsafeTimer);
+        revealAllImmediately();
+        return;
+      }
+
+      gsap.registerPlugin(ScrollTrigger, SplitText, DrawSVGPlugin, InertiaPlugin);
+
+      const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+      const hasFinePointer = () => finePointerQuery.matches;
+
+      /* ========================================================================
+         6.1 SMOOTH SCROLL (LENIS)
+         ======================================================================== */
+      let lenis = null;
+      if (!prefersReducedMotion && typeof window.Lenis !== "undefined") {
+        lenis = new Lenis({
+          lerp: 0.165,
+          wheelMultiplier: 1.25,
+        });
+
+        lenis.on("scroll", ScrollTrigger.update);
+        gsap.ticker.add((time) => {
+          lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+      }
+
+      // Smooth anchor navigation
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", (e) => {
+          const href = anchor.getAttribute("href");
+          if (!href || href === "#") return;
+          const target = document.querySelector(href);
+          if (!target) return;
+          e.preventDefault();
+          if (lenis && !prefersReducedMotion) {
+            lenis.scrollTo(target, { duration: 1.4 });
+          } else {
+            target.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth" });
+          }
+        });
+      });
+
+      /* ========================================================================
+         6.5 DRAW UNDERLINE SYSTEM
+         ======================================================================== */
+      const UNDERLINE_PATHS = [
+        "M5 20.9999C26.7762 16.2245 49.5532 11.5572 71.7979 14.6666C84.9553 16.5057 97.0392 21.8432 109.987 24.3888C116.413 25.6523 123.012 25.5143 129.042 22.6388C135.981 19.3303 142.586 15.1422 150.092 13.3333C156.799 11.7168 161.702 14.6225 167.887 16.8333C181.562 21.7212 194.975 22.6234 209.252 21.3888C224.678 20.0548 239.912 17.991 255.42 18.3055C272.027 18.6422 288.409 18.867 305 17.9999",
+        "M5 24.2592C26.233 20.2879 47.7083 16.9968 69.135 13.8421C98.0469 9.5853 128.407 4.02322 158.059 5.14674C172.583 5.69708 187.686 8.66104 201.598 11.9696C207.232 13.3093 215.437 14.9471 220.137 18.3619C224.401 21.4596 220.737 25.6575 217.184 27.6168C208.309 32.5097 197.199 34.281 186.698 34.8486C183.159 35.0399 147.197 36.2657 155.105 26.5837C158.11 22.9053 162.993 20.6229 167.764 18.7924C178.386 14.7164 190.115 12.1115 201.624 10.3984C218.367 7.90626 235.528 7.06127 252.521 7.49276C258.455 7.64343 264.389 7.92791 270.295 8.41825C280.321 9.25056 296 10.8932 305 13.0242",
+        "M5 29.5014C9.61174 24.4515 12.9521 17.9873 20.9532 17.5292C23.7742 17.3676 27.0987 17.7897 29.6575 19.0014C33.2644 20.7093 35.6481 24.0004 39.4178 25.5014C48.3911 29.0744 55.7503 25.7731 63.3048 21.0292C67.9902 18.0869 73.7668 16.1366 79.3721 17.8903C85.1682 19.7036 88.2173 26.2464 94.4121 27.2514C102.584 28.5771 107.023 25.5064 113.276 20.6125C119.927 15.4067 128.83 12.3333 137.249 15.0014C141.418 16.3225 143.116 18.7528 146.581 21.0014C149.621 22.9736 152.78 23.6197 156.284 24.2514C165.142 25.8479 172.315 17.5185 179.144 13.5014C184.459 10.3746 191.785 8.74853 195.868 14.5292C199.252 19.3205 205.597 22.9057 211.621 22.5014C215.553 22.2374 220.183 17.8356 222.979 15.5569C225.4 13.5845 227.457 11.1105 230.742 10.5292C232.718 10.1794 234.784 12.9691 236.164 14.0014C238.543 15.7801 240.717 18.4775 243.356 19.8903C249.488 23.1729 255.706 21.2551 261.079 18.0014C266.571 14.6754 270.439 11.5202 277.146 13.6125C280.725 14.7289 283.221 17.209 286.393 19.0014C292.321 22.3517 298.255 22.5014 305 22.5014",
+        "M17.0039 32.6826C32.2307 32.8412 47.4552 32.8277 62.676 32.8118C67.3044 32.807 96.546 33.0555 104.728 32.0775C113.615 31.0152 104.516 28.3028 102.022 27.2826C89.9573 22.3465 77.3751 19.0254 65.0451 15.0552C57.8987 12.7542 37.2813 8.49399 44.2314 6.10216C50.9667 3.78422 64.2873 5.81914 70.4249 5.96641C105.866 6.81677 141.306 7.58809 176.75 8.59886C217.874 9.77162 258.906 11.0553 300 14.4892",
+        "M4.99805 20.9998C65.6267 17.4649 126.268 13.845 187.208 12.8887C226.483 12.2723 265.751 13.2796 304.998 13.9998",
+        "M5 29.8857C52.3147 26.9322 99.4329 21.6611 146.503 17.1765C151.753 16.6763 157.115 15.9505 162.415 15.6551C163.28 15.6069 165.074 15.4123 164.383 16.4275C161.704 20.3627 157.134 23.7551 153.95 27.4983C153.209 28.3702 148.194 33.4751 150.669 34.6605C153.638 36.0819 163.621 32.6063 165.039 32.2029C178.55 28.3608 191.49 23.5968 204.869 19.5404C231.903 11.3436 259.347 5.83254 288.793 5.12258C294.094 4.99476 299.722 4.82265 305 5.45025",
+      ];
+
+      let pathCycleIdx = Math.floor(Math.random() * UNDERLINE_PATHS.length);
+      const alwaysDrawFns = [];
+
+      function createUnderlineSVG(d) {
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 310 40");
+        svg.setAttribute("preserveAspectRatio", "none");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", d);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", "currentColor");
+        path.setAttribute("stroke-width", "10");
+        path.setAttribute("stroke-linecap", "round");
+        svg.appendChild(path);
+        return { svg, path };
+      }
+
+      function initDrawUnderlines() {
+        document.querySelectorAll("[data-draw-line]").forEach((el) => {
+          const box = el.querySelector(".draw-line-box");
+          if (!box) return;
+
+          const isAlways = el.getAttribute("data-draw-line") === "always";
+
+          if (isAlways) {
+            const d = UNDERLINE_PATHS[pathCycleIdx % UNDERLINE_PATHS.length];
+            pathCycleIdx++;
+            const { svg, path } = createUnderlineSVG(d);
+            box.appendChild(svg);
+            gsap.set(path, { drawSVG: prefersReducedMotion ? "100%" : "0%" });
+            alwaysDrawFns.push(() => {
+              gsap.to(path, { drawSVG: "100%", duration: 0.6, ease: "power2.inOut" });
+            });
+            return;
+          }
+
+          let activeTween = null;
+          let activeSvg = null;
+          let isHovered = false;
+
+          const eraseActive = () => {
+            if (!activeSvg) return;
+            const path = activeSvg.querySelector("path");
+            const svgToRemove = activeSvg;
+            activeSvg = null;
+            gsap.to(path, {
+              drawSVG: "100% 100%",
+              duration: 0.5,
+              ease: "power2.inOut",
+              onComplete: () => svgToRemove.remove(),
+            });
+          };
+
+          el.addEventListener("mouseenter", () => {
+            isHovered = true;
+            if (activeSvg) {
+              activeSvg.remove();
+              activeSvg = null;
+            }
+            const d = UNDERLINE_PATHS[pathCycleIdx % UNDERLINE_PATHS.length];
+            pathCycleIdx++;
+            const { svg, path } = createUnderlineSVG(d);
+            box.appendChild(svg);
+            activeSvg = svg;
+
+            gsap.set(path, { drawSVG: "0%" });
+            activeTween = gsap.to(path, {
+              drawSVG: "100%",
+              duration: 0.5,
+              ease: "power2.inOut",
+              onComplete: () => {
+                activeTween = null;
+                if (!isHovered) eraseActive();
+              },
+            });
+          });
+
+          el.addEventListener("mouseleave", () => {
+            isHovered = false;
+            if (!activeTween) {
+              eraseActive();
+            }
+          });
+        });
+      }
+
+      /* ========================================================================
+         6.3 & 6.4 TEXT REVEAL (LOAD & SCROLL)
+         ======================================================================== */
+      const splitInstances = new WeakMap();
+
+      function splitElement(el, mode) {
+        if (splitInstances.has(el)) return splitInstances.get(el);
+        const hasFontHover = el.hasAttribute("data-font-weight-hover") || el.querySelector("[data-font-weight-hover]");
+        const splitType = mode === "chars" ? "chars,words,lines" : "lines,words";
+        const split = new SplitText(el, {
+          type: splitType,
+          linesClass: "line",
+          charsClass: "char",
+          mask: "lines",
+          autoSplit: !hasFontHover,
+        });
+        splitInstances.set(el, split);
+        return split;
+      }
+
+      function initScrollReveals() {
+        if (prefersReducedMotion) return;
+
+        // Grouped scroll reveals
+        document.querySelectorAll("[data-scroll-reveal-group]").forEach((group) => {
+          const targets = Array.from(group.querySelectorAll("[data-scroll-reveal]"));
+          if (!targets.length) return;
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: group,
+              start: "top 85%",
+              once: true,
+            },
+          });
+
+          targets.forEach((el, idx) => {
+            const mode = el.getAttribute("data-scroll-reveal") || "lines";
+            const offset = idx * 0.12;
+
+            if (mode === "element") {
+              gsap.set(el, { y: 24, autoAlpha: 0 });
+              tl.to(el, { y: 0, autoAlpha: 1, duration: 0.8, ease: "expo.out" }, offset);
+            } else {
+              gsap.set(el, { visibility: "visible" });
+              const split = splitElement(el, mode);
+              const items = mode === "chars" ? split.chars : split.lines;
+              const stagger = mode === "chars" ? 0.0175 : 0.07;
+              gsap.set(items, { yPercent: 135 });
+              tl.to(
+                items,
+                {
+                  yPercent: 0,
+                  duration: 1,
+                  ease: "expo.out",
+                  stagger,
+                },
+                offset
+              );
+            }
+          });
+        });
+
+        // Standalone scroll reveals (not inside a group)
+        document.querySelectorAll("[data-scroll-reveal]").forEach((el) => {
+          if (el.closest("[data-scroll-reveal-group]")) return;
+          const mode = el.getAttribute("data-scroll-reveal") || "lines";
+
+          if (mode === "element") {
+            gsap.set(el, { y: 24, autoAlpha: 0 });
+            gsap.to(el, {
+              y: 0,
+              autoAlpha: 1,
+              duration: 0.8,
+              ease: "expo.out",
+              scrollTrigger: { trigger: el, start: "top 85%", once: true },
+            });
+          } else {
+            gsap.set(el, { visibility: "visible" });
+            const split = splitElement(el, mode);
+            const items = mode === "chars" ? split.chars : split.lines;
+            const stagger = mode === "chars" ? 0.0175 : 0.07;
+            gsap.set(items, { yPercent: 135 });
+            gsap.to(items, {
+              yPercent: 0,
+              duration: 1,
+              ease: "expo.out",
+              stagger,
+              scrollTrigger: { trigger: el, start: "top 85%", once: true },
+            });
+          }
+        });
+      }
+
+      /* ========================================================================
+         6.6 FONT WEIGHT FOLLOWS CURSOR
+         ======================================================================== */
+      function initFontWeightHover() {
+        if (!hasFinePointer() || prefersReducedMotion) return;
+
+        const charRecords = [];
+        let pointerPageX = -9999;
+        let pointerPageY = -9999;
+        let lastScrollY = window.scrollY;
+
+        function registerHeading(headingEl) {
+          const mode =
+            headingEl.getAttribute("data-text-reveal") ||
+            headingEl.getAttribute("data-scroll-reveal") ||
+            "chars";
+          const split = splitElement(headingEl, mode === "chars" ? "chars" : "chars");
+          const chars = split.chars || [];
+
+          chars.forEach((char) => {
+            const owner = char.closest("[data-font-weight-hover]") || headingEl;
+            const rest = Number(owner.getAttribute("data-wght-rest") || 700);
+            const near = Number(owner.getAttribute("data-wght-near") || 200);
+            const radius = Number(owner.getAttribute("data-wght-radius") || 400);
+
+            char.style.setProperty("--wght", rest);
+
+            // Preserve existing wdth / opsz while substituting wght with var(--wght)
+            const computed = window.getComputedStyle(owner).fontVariationSettings;
+            let baseAxes = "";
+            if (computed && computed !== "normal") {
+              baseAxes = computed
+                .split(",")
+                .map((s) => s.trim())
+                .filter((s) => !s.startsWith('"wght"') && !s.startsWith("'wght'"))
+                .join(", ");
+            }
+            char.style.fontVariationSettings = baseAxes
+              ? `'wght' var(--wght), ${baseAxes}`
+              : `'wght' var(--wght)`;
+
+            const quick = gsap.quickTo(char, "--wght", { duration: 0.4, ease: "power2.out" });
+
+            charRecords.push({
+              el: char,
+              rest,
+              near,
+              radius,
+              minW: Math.min(rest, near),
+              maxW: Math.max(rest, near),
+              current: rest,
+              cx: 0,
+              cy: 0,
+              quick,
+            });
+          });
+        }
+
+        function measureAllChars() {
+          const sx = window.scrollX;
+          const sy = window.scrollY;
+          for (let i = 0; i < charRecords.length; i++) {
+            const r = charRecords[i];
+            const rect = r.el.getBoundingClientRect();
+            r.cx = rect.left + rect.width * 0.5 + sx;
+            r.cy = rect.top + rect.height * 0.5 + sy;
+          }
+        }
+
+        // Top-level marked headings
+        document.querySelectorAll("[data-font-weight-hover]").forEach((el) => {
+          if (el.parentElement && el.parentElement.closest("[data-font-weight-hover]")) return;
+
+          if (el.hasAttribute("data-text-reveal")) {
+            el.addEventListener(
+              "reveal:done",
+              () => {
+                registerHeading(el);
+                measureAllChars();
+              },
+              { once: true }
+            );
+          } else {
+            registerHeading(el);
+          }
+        });
+
+        measureAllChars();
+
+        window.addEventListener("pointermove", (e) => {
+          pointerPageX = e.clientX + window.scrollX;
+          pointerPageY = e.clientY + window.scrollY;
+        }, { passive: true });
+
+        window.addEventListener("resize", measureAllChars, { passive: true });
+        window.addEventListener(
+          "scroll",
+          () => {
+            const dy = window.scrollY - lastScrollY;
+            lastScrollY = window.scrollY;
+            if (pointerPageY > -5000) pointerPageY += dy;
+            measureAllChars();
+          },
+          { passive: true }
+        );
+
+        gsap.ticker.add(() => {
+          if (!charRecords.length) return;
+          for (let i = 0; i < charRecords.length; i++) {
+            const r = charRecords[i];
+            const dist = Math.hypot(pointerPageX - r.cx, pointerPageY - r.cy);
+            const f = dist >= r.radius ? 0 : 1 - dist / r.radius;
+            const raw = r.rest + (r.near - r.rest) * f;
+            const clamped = Math.max(r.minW, Math.min(r.maxW, raw));
+
+            if (Math.abs(clamped - r.current) >= 1) {
+              r.current = clamped;
+              r.quick(clamped);
+            }
+          }
+        });
+      }
+
+      /* ========================================================================
+         6.7 HERO CURSOR CARD
+         ======================================================================== */
+      function initHeroCursorCard() {
+        const hero = document.getElementById("hero");
+        const card = document.getElementById("heroCursorCard");
+        const media = document.getElementById("heroCursorMedia");
+        if (!hero || !card || !media) return;
+
+        const slides = Array.from(media.querySelectorAll(".hero__cursor-slide"));
+        const threshold = Number(hero.getAttribute("data-threshold") || 300);
+        let activeIndex = 0;
+
+        const setActiveSlide = (idx) => {
+          slides.forEach((s, i) => s.classList.toggle("on", i === idx));
+        };
+        setActiveSlide(0);
+
+        // Only run interactive cursor tracking on desktop (>=992px) with fine hover pointer
+        const isDesktopFine = () => window.innerWidth >= 992 && hasFinePointer();
+
+        if (!isDesktopFine()) {
+          if (window.innerWidth > 600) {
+            gsap.set(card, { autoAlpha: 0 });
+          }
+          return;
+        }
+
+        gsap.set(card, { autoAlpha: 0 });
+
+        const xTo = gsap.quickTo(card, "x", { duration: 1, ease: "power4" });
+        const yTo = gsap.quickTo(card, "y", { duration: 1, ease: "power4" });
+        const rotTo = gsap.quickTo(card, "rotation", { duration: 1, ease: "power4" });
+        const mediaXTo = gsap.quickTo(media, "xPercent", { duration: 0.6, ease: "power2" });
+        const mediaYTo = gsap.quickTo(media, "yPercent", { duration: 0.7, ease: "power2" });
+
+        let hasEntered = false;
+        let lastX = 0;
+        let lastY = 0;
+        let travel = 0;
+        let settleTimer = null;
+
+        const clamp = (min, max, val) => Math.max(min, Math.min(max, val));
+
+        hero.addEventListener("mousemove", (e) => {
+          if (!isDesktopFine()) return;
+
+          const overInteractive = e.target.closest("a, button");
+          if (overInteractive) {
+            gsap.to(card, { autoAlpha: 0, duration: 0.25, ease: "power2.out", overwrite: "auto" });
+            return;
+          }
+
+          const heroRect = hero.getBoundingClientRect();
+          const x = e.clientX - window.innerWidth * 0.5;
+          const y = e.clientY - window.innerHeight * 0.5 - heroRect.top;
+
+          if (!hasEntered) {
+            hasEntered = true;
+            lastX = x;
+            lastY = y;
+            gsap.set(card, { x, y, rotation: 0 });
+            gsap.to(card, { autoAlpha: 1, duration: 0.3, overwrite: "auto" });
+            return;
+          }
+
+          gsap.to(card, { autoAlpha: 1, duration: 0.25, overwrite: "auto" });
+
+          const dx = (x - lastX) * 0.5;
+          const dy = (y - lastY) * 0.5;
+          const rot = (x - lastX) * 0.25;
+
+          xTo(x);
+          yTo(y);
+          rotTo(rot);
+          mediaXTo(-clamp(-8, 8, dx));
+          mediaYTo(-clamp(-8, 8, dy));
+
+          travel += Math.abs(dx) + Math.abs(dy);
+          if (travel > threshold) {
+            travel = 0;
+            activeIndex = (activeIndex + 1) % slides.length;
+            setActiveSlide(activeIndex);
+          }
+
+          lastX = x;
+          lastY = y;
+
+          clearTimeout(settleTimer);
+          settleTimer = setTimeout(() => {
+            rotTo(0);
+            mediaXTo(0);
+            mediaYTo(0);
+          }, 66);
+        });
+
+        hero.addEventListener("mouseleave", () => {
+          hasEntered = false;
+          travel = 0;
+          clearTimeout(settleTimer);
+          gsap.to(card, { autoAlpha: 0, duration: 0.3, overwrite: "auto" });
+          rotTo(0);
+          mediaXTo(0);
+          mediaYTo(0);
+        });
+      }
+
+      /* ========================================================================
+         6.8 CLIENT MARQUEE THAT FLIPS WITH SCROLL DIRECTION
+         ======================================================================== */
+      function initClientMarquee() {
+        if (prefersReducedMotion) return;
+
+        const marquee = document.getElementById("heroMarquee");
+        const scrollWrap = document.getElementById("marqueeScroll");
+        const baseCollection = document.getElementById("marqueeCollection");
+        if (!marquee || !scrollWrap || !baseCollection) return;
+
+        // Scroll wrapper styling (-10% margin-left, 120% width)
+        scrollWrap.style.marginLeft = "-10%";
+        scrollWrap.style.width = "120%";
+
+        // Append 2 clones of the collection
+        const clone1 = baseCollection.cloneNode(true);
+        const clone2 = baseCollection.cloneNode(true);
+        clone1.removeAttribute("id");
+        clone2.removeAttribute("id");
+        scrollWrap.appendChild(clone1);
+        scrollWrap.appendChild(clone2);
+
+        const collections = [baseCollection, clone1, clone2];
+        const speed = 30;
+        const direction = -1; // left = -1
+
+        const getFactor = () => {
+          const vw = window.innerWidth;
+          if (vw <= 479) return 0.25;
+          if (vw <= 991) return 0.5;
+          return 1;
+        };
+
+        const colWidth = baseCollection.getBoundingClientRect().width || window.innerWidth;
+        const duration = speed * (colWidth / window.innerWidth) * getFactor();
+
+        gsap.set(collections, { xPercent: 0 });
+        const loopTween = gsap.to(collections, {
+          xPercent: -100,
+          repeat: -1,
+          duration: Math.max(4, duration),
+          ease: "none",
+        });
+        loopTween.totalProgress(0.5);
+
+        // Flip timeScale on scroll direction
+        ScrollTrigger.create({
+          trigger: marquee,
+          start: "top bottom",
+          end: "bottom top",
+          onUpdate: (self) => {
+            // Down (1) -> -direction (+1); Up (-1) -> +direction (-1)
+            loopTween.timeScale(self.direction === 1 ? -direction : direction);
+          },
+        });
+
+        // Scrubbed horizontal drift from +10vw to -10vw
+        gsap.fromTo(
+          scrollWrap,
+          { x: "10vw" },
+          {
+            x: "-10vw",
+            ease: "none",
+            scrollTrigger: {
+              trigger: marquee,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 0,
+            },
+          }
+        );
+      }
+
+      /* ========================================================================
+         6.9 "LATEST DROPS" 3D STACK
+         ======================================================================== */
+      function initFeaturedStack() {
+        const section = document.querySelector("[data-featured-stack]");
+        const pin = document.getElementById("workPin");
+        const stack = document.getElementById("workStack");
+        const badge = document.getElementById("workBadge");
+        if (!section || !pin || !stack) return;
+
+        const slides = Array.from(stack.querySelectorAll(".work-slide"));
+        const count = slides.length;
+        const depth = 120;
+        const offset = 40;
+        const tiltX = 6;
+        const tiltY = 10;
+        const scrollFactor = Number(section.getAttribute("data-scroll-factor") || 1.2);
+
+        const mm = gsap.matchMedia();
+
+        mm.add("(min-width: 992px)", () => {
+          // Initial 3D depth stacking
+          slides.forEach((slide, b) => {
+            gsap.set(slide, {
+              z: -b * depth,
+              y: -b * offset,
+              zIndex: count - b,
+              autoAlpha: 1,
+            });
+          });
+
+          if (badge) gsap.set(badge, { rotation: 0 });
+
+          // Paused timeline of peel-away steps (duration = count - 1)
+          const tl = gsap.timeline({ paused: true });
+
+          for (let b = 0; b < count - 1; b++) {
+            const current = slides[b];
+
+            // Drop current slide down
+            tl.to(
+              current,
+              {
+                y: `+=${window.innerHeight * 0.9}`,
+                duration: 1,
+                ease: "power2.in",
+              },
+              b
+            );
+
+            // Fade out at b + 0.7 over 0.25s
+            tl.to(
+              current,
+              {
+                autoAlpha: 0,
+                duration: 0.25,
+                ease: "none",
+              },
+              b + 0.7
+            );
+
+            // Advance remaining slides behind it forward one slot
+            for (let k = b + 1; k < count; k++) {
+              const newIdx = k - (b + 1);
+              tl.to(
+                slides[k],
+                {
+                  z: -newIdx * depth,
+                  y: -newIdx * offset,
+                  duration: 1,
+                  ease: "none",
+                },
+                b
+              );
+            }
+          }
+
+          // Badge rotates 0 -> 180 linearly across the entire timeline
+          if (badge) {
+            tl.to(
+              badge,
+              {
+                rotation: 180,
+                duration: count - 1,
+                ease: "none",
+              },
+              0
+            );
+          }
+
+          const st = ScrollTrigger.create({
+            trigger: section,
+            start: "top top",
+            end: () => `+=${window.innerHeight * scrollFactor * (count - 1)}`,
+            pin: pin,
+            pinSpacing: true,
+            scrub: 0.3,
+            refreshPriority: 1,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              tl.progress(self.progress);
+            },
+          });
+
+          // Mouse tilt (disabled under reduced motion)
+          let onMove = null;
+          let onLeave = null;
+
+          if (!prefersReducedMotion && hasFinePointer()) {
+            const rotXTo = gsap.quickTo(stack, "rotationX", { duration: 0.6, ease: "power3" });
+            const rotYTo = gsap.quickTo(stack, "rotationY", { duration: 0.6, ease: "power3" });
+
+            onMove = (e) => {
+              const rect = pin.getBoundingClientRect();
+              const normX = (e.clientX - rect.left) / rect.width - 0.5;
+              const normY = (e.clientY - rect.top) / rect.height - 0.5;
+              rotXTo(-normY * tiltX);
+              rotYTo(normX * tiltY);
+            };
+
+            onLeave = () => {
+              rotXTo(0);
+              rotYTo(0);
+            };
+
+            pin.addEventListener("mousemove", onMove);
+            pin.addEventListener("mouseleave", onLeave);
+          }
+
+          return () => {
+            st.kill();
+            tl.kill();
+            if (onMove) pin.removeEventListener("mousemove", onMove);
+            if (onLeave) pin.removeEventListener("mouseleave", onLeave);
+            gsap.set(slides, { clearProps: "all" });
+            gsap.set(stack, { clearProps: "transform" });
+          };
+        });
+      }
+
+      /* ========================================================================
+         6.10 "VIEW CASE ->" CURSOR LABEL
+         ======================================================================== */
+      function initCursorMarquee() {
+        if (!hasFinePointer()) return;
+
+        const wrapper = document.getElementById("cursorMarquee");
+        if (!wrapper) return;
+
+        const spans = Array.from(wrapper.querySelectorAll(".cursor-marquee__text"));
+        const xTo = gsap.quickTo(wrapper, "x", { duration: 0.4, ease: "power3" });
+        const yTo = gsap.quickTo(wrapper, "y", { duration: 0.4, ease: "power3" });
+
+        let hasMoved = false;
+        let lastClientX = -9999;
+        let lastClientY = -9999;
+        let activeTarget = null;
+        let pauseTimer = null;
+
+        function evaluateHoverTarget() {
+          if (lastClientX < 0 || lastClientY < 0) return;
+          const elUnderPointer = document.elementFromPoint(lastClientX, lastClientY);
+          const match = elUnderPointer ? elUnderPointer.closest("[data-cursor-marquee-text]") : null;
+
+          if (match && match !== activeTarget) {
+            activeTarget = match;
+            clearTimeout(pauseTimer);
+            const text = match.getAttribute("data-cursor-marquee-text") || "View case →";
+            const dur = Math.max(1.2, text.length / 5);
+
+            spans.forEach((sp) => {
+              sp.textContent = text;
+              sp.style.animationDuration = `${dur}s`;
+              sp.style.animationPlayState = "running";
+            });
+            wrapper.setAttribute("data-cursor-marquee-status", "active");
+          } else if (!match && activeTarget) {
+            activeTarget = null;
+            wrapper.setAttribute("data-cursor-marquee-status", "not-active");
+            clearTimeout(pauseTimer);
+            pauseTimer = setTimeout(() => {
+              spans.forEach((sp) => {
+                sp.style.animationPlayState = "paused";
+              });
+            }, 400);
+          }
+        }
+
+        window.addEventListener(
+          "pointermove",
+          (e) => {
+            lastClientX = e.clientX;
+            lastClientY = e.clientY;
+
+            if (!hasMoved) {
+              hasMoved = true;
+              gsap.set(wrapper, { x: e.clientX, y: e.clientY });
+            } else {
+              xTo(e.clientX);
+              yTo(e.clientY);
+            }
+            evaluateHoverTarget();
+          },
+          { passive: true }
+        );
+
+        window.addEventListener("scroll", evaluateHoverTarget, { passive: true });
+      }
+
+      /* ========================================================================
+         6.11 TEAM PHOTO PARALLAX
+         ======================================================================== */
+      function initTeamParallax() {
+        if (prefersReducedMotion) return;
+
+        const section = document.getElementById("team");
+        const cards = Array.from(document.querySelectorAll(".team-card[data-speed]"));
+        if (!section || !cards.length) return;
+
+        const mm = gsap.matchMedia();
+
+        const setupParallax = (k) => {
+          const distance = 320 * k;
+          const tweens = cards.map((card) => {
+            const speed = Number(card.getAttribute("data-speed") || 1);
+            return gsap.fromTo(
+              card,
+              { y: distance * speed },
+              {
+                y: -distance * speed,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: section,
+                  start: "clamp(top bottom)",
+                  end: "clamp(bottom top)",
+                  scrub: true,
+                  invalidateOnRefresh: true,
+                  refreshPriority: -1,
+                },
+              }
+            );
+          });
+
+          return () => {
+            tweens.forEach((t) => {
+              if (t.scrollTrigger) t.scrollTrigger.kill();
+              t.kill();
+            });
+          };
+        };
+
+        mm.add("(min-width: 992px)", () => setupParallax(1));
+        mm.add("(min-width: 480px) and (max-width: 991px)", () => setupParallax(0.5));
+        mm.add("(max-width: 479px)", () => setupParallax(0.3));
+      }
+
+      /* ========================================================================
+         6.12 MOMENTUM HOVER (INERTIA PLUGIN)
+         ======================================================================== */
+      function initMomentumHover() {
+        if (!hasFinePointer() || prefersReducedMotion) return;
+
+        const section = document.getElementById("team");
+        if (!section) return;
+
+        let curX = 0;
+        let curY = 0;
+        let prevX = 0;
+        let prevY = 0;
+        let vx = 0;
+        let vy = 0;
+        let pointerInitialized = false;
+
+        section.addEventListener(
+          "pointermove",
+          (e) => {
+            curX = e.clientX;
+            curY = e.clientY;
+            if (!pointerInitialized) {
+              prevX = curX;
+              prevY = curY;
+              pointerInitialized = true;
+            }
+          },
+          { passive: true }
+        );
+
+        gsap.ticker.add(() => {
+          if (!pointerInitialized) return;
+          vx = curX - prevX;
+          vy = curY - prevY;
+          prevX = curX;
+          prevY = curY;
+        });
+
+        const clamp = (min, max, val) => Math.max(min, Math.min(max, val));
+
+        section.querySelectorAll("[data-momentum-hover]").forEach((target) => {
+          target.addEventListener("pointerenter", (e) => {
+            const rect = target.getBoundingClientRect();
+            const cx = rect.left + rect.width * 0.5;
+            const cy = rect.top + rect.height * 0.5;
+            const F = e.clientX - cx;
+            const R = e.clientY - cy;
+            const hypot = Math.hypot(F, R) || 1;
+            const torque = (F * vy - R * vx) / hypot;
+
+            // Preserve base CSS rotation while applying relative inertia flick
+            const baseRot = gsap.getProperty(target, "rotation") || 0;
+
+            gsap.to(target, {
+              inertia: {
+                x: { velocity: clamp(-1080, 1080, vx * 30), end: 0 },
+                y: { velocity: clamp(-1080, 1080, vy * 30), end: 0 },
+                rotation: { velocity: clamp(-60, 60, torque * 20), end: baseRot },
+                resistance: 200,
+              },
+              overwrite: "auto",
+            });
+          });
+        });
+      }
+
+      /* ========================================================================
+         6.13 PAGE THEME SWITCH
+         ======================================================================== */
+      function initThemeSwitch() {
+        document.querySelectorAll("[data-page-theme]").forEach((el) => {
+          const themeVal = el.getAttribute("data-page-theme");
+          ScrollTrigger.create({
+            trigger: el,
+            start: "top 55%",
+            end: "bottom 45%",
+            refreshPriority: -1,
+            onToggle: (self) => {
+              if (self.isActive) {
+                document.documentElement.setAttribute("data-theme", themeVal);
+              } else {
+                document.documentElement.removeAttribute("data-theme");
+              }
+            },
+          });
+        });
+      }
+
+      /* ========================================================================
+         6.2 & 6.3 LOAD SEQUENCE & INITIAL TEXT REVEALS
+         ======================================================================== */
+      function initAllPageSystems() {
+        initDrawUnderlines();
+        initScrollReveals();
+        initFontWeightHover();
+        initHeroCursorCard();
+        initClientMarquee();
+        initFeaturedStack();
+        initCursorMarquee();
+        initTeamParallax();
+        initMomentumHover();
+        initThemeSwitch();
+        ScrollTrigger.refresh();
+      }
+
+      function runLoadSequence() {
+        clearTimeout(failsafeTimer);
+        document.documentElement.setAttribute("data-page-ready", "true");
+
+        const wipe = document.getElementById("loadWipe");
+        const wipePath = document.getElementById("wipePath");
+        const mainEl = document.querySelector("main");
+
+        if (prefersReducedMotion) {
+          if (wipe) wipe.setAttribute("data-transition-ready", "true");
+          gsap.set(mainEl, { autoAlpha: 1 });
+          document.querySelectorAll("[data-text-reveal], [data-scroll-reveal]").forEach((el) => {
+            el.style.visibility = "visible";
+          });
+          initAllPageSystems();
+          alwaysDrawFns.forEach((fn) => fn());
+          return;
+        }
+
+        const master = gsap.timeline();
+
+        // t = 0s: main autoAlpha 0, thick tomato scribble covers screen
+        gsap.set(mainEl, { autoAlpha: 0 });
+        if (wipePath) {
+          gsap.set(wipePath, { drawSVG: "0% 100%", strokeWidth: "30%" });
+        }
+
+        // t = 0.4s ("reveal" label): main visible, init page systems, text reveal (0.6s delay), unwind wipe
+        master.addLabel("reveal", 0.4);
+        master.set(mainEl, { autoAlpha: 1 }, "reveal");
+
+        master.call(
+          () => {
+            initAllPageSystems();
+
+            // Load text reveals (base delay 0.6s)
+            const groups = document.querySelectorAll("[data-text-reveal-group]");
+            groups.forEach((group) => {
+              const items = Array.from(group.querySelectorAll("[data-text-reveal]"));
+              items.forEach((el, idx) => {
+                const mode = el.getAttribute("data-text-reveal") || "chars";
+                gsap.set(el, { visibility: "visible" });
+                const split = splitElement(el, mode);
+                const targets = mode === "chars" ? split.chars : split.lines;
+                const stagger = mode === "chars" ? 0.0175 : 0.07;
+
+                gsap.set(targets, { yPercent: 135 });
+                gsap.to(targets, {
+                  yPercent: 0,
+                  duration: 1,
+                  ease: "expo.out",
+                  stagger,
+                  delay: 0.6 + idx * 0.12,
+                  onComplete: () => {
+                    el.dispatchEvent(new CustomEvent("reveal:done"));
+                  },
+                });
+              });
+            });
+
+            // Standalone load reveals
+            document.querySelectorAll("[data-text-reveal]").forEach((el) => {
+              if (el.closest("[data-text-reveal-group]")) return;
+              const mode = el.getAttribute("data-text-reveal") || "chars";
+              gsap.set(el, { visibility: "visible" });
+              const split = splitElement(el, mode);
+              const targets = mode === "chars" ? split.chars : split.lines;
+              const stagger = mode === "chars" ? 0.0175 : 0.07;
+
+              gsap.set(targets, { yPercent: 135 });
+              gsap.to(targets, {
+                yPercent: 0,
+                duration: 1,
+                ease: "expo.out",
+                stagger,
+                delay: 0.6,
+                onComplete: () => {
+                  el.dispatchEvent(new CustomEvent("reveal:done"));
+                },
+              });
+            });
+
+            // ~1.3s after init: hero link always-on underline draws in (0.6s)
+            gsap.delayedCall(1.3, () => {
+              alwaysDrawFns.forEach((fn) => fn());
+            });
+          },
+          null,
+          "reveal"
+        );
+
+        if (wipePath) {
+          master.to(
+            wipePath,
+            {
+              drawSVG: "100% 100%",
+              strokeWidth: "5%",
+              duration: 1.25,
+              ease: "power1.inOut",
+              onComplete: () => {
+                if (wipe) wipe.setAttribute("data-transition-ready", "true");
+              },
+            },
+            "reveal"
+          );
+        }
+      }
+
+      // Start when document.fonts.ready resolves, or after 1.5s, whichever comes first
+      let started = false;
+      const startOnce = () => {
+        if (started) return;
+        started = true;
+        runLoadSequence();
+      };
+
+      const fontTimeout = setTimeout(startOnce, 1500);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          clearTimeout(fontTimeout);
+          startOnce();
+        });
+      } else {
+        clearTimeout(fontTimeout);
+        startOnce();
+      }
+    })();
+  </script>
+</body>
+</html>
